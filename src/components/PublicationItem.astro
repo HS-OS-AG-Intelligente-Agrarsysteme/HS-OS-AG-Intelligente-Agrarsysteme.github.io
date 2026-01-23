@@ -1,0 +1,74 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  authors: string[];
+  date: Date;
+  doi?: string;
+  pdfUrl?: string;
+  codeUrl?: string;
+}
+
+const { slug, title, authors, date, doi, pdfUrl, codeUrl } = Astro.props;
+---
+
+<article class="py-4 border-b border-hs-gray-300 last:border-b-0">
+  <h3 class="font-medium text-hs-gray-900 mb-1">
+    <a href={`/publications/${slug}`} class="text-hs-cyan hover:underline">
+      {title}
+    </a>
+  </h3>
+  <p class="text-sm text-hs-gray-700 mb-1">
+    {authors.join(", ")}
+  </p>
+  <p class="text-sm text-hs-gray-500">
+    {
+      date
+        .toLocaleDateString("en-gb", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+        .replace(",", "")
+    }
+  </p>
+
+  <div class="flex flex-wrap gap-3 mt-2">
+    {
+      doi && (
+        <a
+          href={`https://doi.org/${doi}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-hs-cyan hover:underline"
+        >
+          DOI
+        </a>
+      )
+    }
+    {
+      pdfUrl && (
+        <a
+          href={pdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-hs-cyan hover:underline"
+        >
+          PDF
+        </a>
+      )
+    }
+    {
+      codeUrl && (
+        <a
+          href={codeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-hs-cyan hover:underline"
+        >
+          Code
+        </a>
+      )
+    }
+  </div>
+</article>

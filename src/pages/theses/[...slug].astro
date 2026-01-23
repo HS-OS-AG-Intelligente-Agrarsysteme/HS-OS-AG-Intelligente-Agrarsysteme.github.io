@@ -1,0 +1,24 @@
+---
+import ContentDetailLayout from "../../layouts/ContentDetailLayout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const theses = await getCollection("theses");
+  return theses.map((thesis) => ({
+    params: { slug: thesis.slug },
+    props: { thesis },
+  }));
+}
+
+const { thesis } = Astro.props;
+const { Content } = await render(thesis);
+---
+
+<ContentDetailLayout
+  contentType="thesis"
+  title={thesis.data.title}
+  description={thesis.data.description}
+  metadata={thesis.data}
+>
+  <Content />
+</ContentDetailLayout>

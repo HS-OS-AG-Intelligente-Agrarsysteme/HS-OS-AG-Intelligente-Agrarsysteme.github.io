@@ -1,0 +1,184 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allTheses = await getCollection('theses');
+
+const theses = allTheses.sort((a, b) => {
+  const aDate = a.data.startDate?.getTime() || 0;
+  const bDate = b.data.startDate?.getTime() || 0;
+  return bDate - aDate;
+});
+
+// Get unique years from theses with start dates
+const years = [...new Set(theses.filter((t) => t.data.startDate).map((t) => t.data.startDate!.getFullYear()))].sort((a, b) => b - a);
+
+const typeLabels = {
+  bachelor: 'Bachelor Thesis',
+  master: 'Master Thesis',
+  phd: 'Dissertation',
+};
+---
+
+<Layout title="Theses" description="Student theses supervised by the Intelligent Agricultural Systems group">
+  <div class="section">
+    <div class="container-narrow">
+      <h1 class="text-3xl font-bold text-hs-gray-900 mb-2">Student Theses</h1>
+      <p class="text-hs-gray-700 mb-8">
+        Browse bachelor, master, and PhD theses supervised by our research group.
+      </p>
+
+      {theses.length === 0 ? (
+        <p class="text-hs-gray-500 text-center py-12">
+          No theses yet. Check back soon!
+        </p>
+      ) : (
+        <>
+          <!-- Filter controls -->
+          <div class="mb-8 flex flex-wrap gap-4 items-center">
+            <div>
+              <label for="type-filter" class="sr-only">Filter by type</label>
+              <select
+                id="type-filter"
+                class="bg-white border border-hs-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hs-cyan"
+              >
+                <option value="">All types</option>
+                <option value="bachelor">Bachelor</option>
+                <option value="master">Master</option>
+                <option value="phd">PhD</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="year-filter" class="sr-only">Filter by year</label>
+              <select
+                id="year-filter"
+                class="bg-white border border-hs-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hs-cyan"
+              >
+                <option value="">All years</option>
+                {years.map((year) => (
+                  <option value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label class="flex items-center gap-2 text-sm text-hs-gray-700 cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="proposal-filter"
+                  class="w-4 h-4 text-hs-cyan border-hs-gray-300 rounded focus:ring-hs-cyan"
+                />
+                <span>Proposals only</span>
+              </label>
+            </div>
+
+            <span class="text-sm text-hs-gray-500" id="thesis-count">
+              {theses.length} {theses.length === 1 ? 'thesis' : 'theses'}
+            </span>
+          </div>
+
+          <!-- Theses list -->
+          <div class="space-y-4" id="theses-list">
+            {theses.map((thesis) => (
+              <article
+                class="thesis-item card hover:shadow-md transition-shadow"
+                data-type={thesis.data.type}
+                data-year={thesis.data.startDate?.getFullYear() || ''}
+                data-proposal={thesis.data.proposal ? 'true' : 'false'}
+              >
+                <div class="flex flex-wrap items-start gap-2 mb-2">
+                  <span class="text-xs px-2 py-1 rounded-full bg-hs-cyan/10 text-hs-cyan">
+                    {typeLabels[thesis.data.type]}
+                  </span>
+                  {thesis.data.proposal && (
+                    <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800">
+                      Proposal
+                    </span>
+                  )}
+                  {thesis.data.startDate && (
+                    <span class="text-xs text-hs-gray-500 ml-auto">
+                      {thesis.data.startDate.getFullYear()}
+                    </span>
+                  )}
+                </div>
+
+                <h2 class="text-lg font-medium text-hs-gray-900 mb-2">
+                  <a href={`/theses/${thesis.slug}`} class="text-hs-cyan hover:underline">
+                    {thesis.data.title}
+                  </a>
+                </h2>
+
+                <div class="text-sm text-hs-gray-700 space-y-1">
+                  <p><span class="font-medium">Author:</span> {thesis.data.author}</p>
+                  {thesis.data.supervisor && (
+                    <p><span class="font-medium">Supervisor:</span> {thesis.data.supervisor}</p>
+                  )}
+                </div>
+
+                {thesis.data.abstract && (
+                  <p class="text-sm text-hs-gray-500 mt-3 line-clamp-2">
+                    {thesis.data.abstract}
+                  </p>
+                )}
+
+                {thesis.data.pdfUrl && (
+                  <div class="mt-3">
+                    <a
+                      href={thesis.data.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-sm text-hs-cyan hover:underline"
+                    >
+                      Download PDF &rarr;
+                    </a>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const typeFilter = document.getElementById('type-filter') as HTMLSelectElement;
+  const yearFilter = document.getElementById('year-filter') as HTMLSelectElement;
+  const proposalFilter = document.getElementById('proposal-filter') as HTMLInputElement;
+  const thesisCount = document.getElementById('thesis-count');
+  const thesisItems = document.querySelectorAll('.thesis-item');
+
+  function filterTheses() {
+    const selectedType = typeFilter.value;
+    const selectedYear = yearFilter.value;
+    const proposalsOnly = proposalFilter.checked;
+    let visibleCount = 0;
+
+    thesisItems.forEach((item) => {
+      const itemType = item.getAttribute('data-type');
+      const itemYear = item.getAttribute('data-year');
+      const itemProposal = item.getAttribute('data-proposal') === 'true';
+
+      const matchesType = !selectedType || itemType === selectedType;
+      const matchesYear = !selectedYear || itemYear === selectedYear;
+      const matchesProposal = !proposalsOnly || itemProposal;
+
+      if (matchesType && matchesYear && matchesProposal) {
+        item.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+
+    if (thesisCount) {
+      thesisCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'thesis' : 'theses'}`;
+    }
+  }
+
+  typeFilter?.addEventListener('change', filterTheses);
+  yearFilter?.addEventListener('change', filterTheses);
+  proposalFilter?.addEventListener('change', filterTheses);
+</script>

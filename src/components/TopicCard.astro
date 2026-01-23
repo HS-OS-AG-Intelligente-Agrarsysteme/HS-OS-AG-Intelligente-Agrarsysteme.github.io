@@ -1,0 +1,50 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  author: string;
+  date: Date;
+  thumbnail?: string;
+}
+
+const { title, description, href, author, date, thumbnail } = Astro.props;
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+---
+
+<a href={href} class="group block hover:no-underline">
+  <article class="card h-full flex flex-col hover:shadow-md transition-shadow">
+    {
+      thumbnail && (
+        <div class="aspect-video bg-hs-gray-100 rounded-t-lg -mx-6 -mt-6 mb-4 overflow-hidden">
+          <img
+            src={thumbnail}
+            alt={title}
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      )
+    }
+
+    <div class="text-xs text-hs-gray-500 mb-2">
+      {author} • {formatDate(date)}
+    </div>
+
+    <h3
+      class="text-lg font-medium text-hs-gray-900 group-hover:text-hs-cyan transition-colors mb-2"
+    >
+      {title}
+    </h3>
+
+    <p class="text-sm text-hs-gray-700 flex-1 line-clamp-3">
+      {description}
+    </p>
+  </article>
+</a>

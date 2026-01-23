@@ -1,0 +1,197 @@
+---
+import Layout from "../layouts/Layout.astro";
+import HeroSlideshow from "../components/HeroSlideshow.astro";
+import TopicCard from "../components/TopicCard.astro";
+import PublicationItem from "../components/PublicationItem.astro";
+import ThesisItem from "../components/ThesisItem.astro";
+import { getCollection } from "astro:content";
+
+// Get recent topics (sorted by date, newest first)
+const allTopics = await getCollection("topics");
+const recentTopics = allTopics
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+// Get recent publications
+const allPublications = await getCollection("publications");
+const recentPublications = allPublications
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 5);
+
+// Get recent theses
+const allTheses = await getCollection("theses");
+const recentTheses = allTheses
+  .sort(
+    (a, b) =>
+      (b.data.startDate?.getTime() || 0) - (a.data.startDate?.getTime() || 0),
+  )
+  .slice(0, 5);
+
+// Prepare slides for hero combining all content types
+const topicSlides = allTopics.map((topic) => ({
+  title: topic.data.title,
+  description: topic.data.description,
+  href: `/topics/${topic.slug}`,
+  contentType: "topic" as const,
+  date: topic.data.date,
+}));
+
+const publicationSlides = allPublications.map((pub) => ({
+  title: pub.data.title,
+  description: pub.data.description,
+  href: `/publications/${pub.slug}`,
+  contentType: "publication" as const,
+  date: pub.data.date,
+}));
+
+const thesisSlides = allTheses.map((thesis) => ({
+  title: thesis.data.title,
+  description: thesis.data.description,
+  href: `/theses/${thesis.slug}`,
+  contentType: "thesis" as const,
+  status: thesis.data.proposal ? ("proposed" as const) : undefined,
+  date: thesis.data.startDate,
+}));
+
+// Combine and sort by date (newest first), take last 5
+const allSlides = [...topicSlides, ...publicationSlides, ...thesisSlides]
+  .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0))
+  .slice(0, 5);
+
+const heroSlides = allSlides;
+---
+
+<Layout title="Home">
+  <!-- Hero Slideshow with Recent Content (Projects, Publications, Theses) -->
+  <HeroSlideshow
+    slides={heroSlides}
+    mainTitle="Intelligent Agricultural Systems"
+    mainSubtitle="Research Group at University of Applied Sciences Osnabrück"
+  />
+
+  <!-- Recent Topics Section -->
+  <section class="section bg-white">
+    <div class="container-narrow">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-medium text-hs-gray-900">
+          Recent Research Topics
+        </h2>
+        <a href="/topics" class="text-sm text-hs-cyan hover:underline">
+          View all &rarr;
+        </a>
+      </div>
+
+      {
+        recentTopics.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentTopics.map((topic) => (
+              <TopicCard
+                title={topic.data.title}
+                description={topic.data.description}
+                href={`/topics/${topic.slug}`}
+                author={topic.data.author}
+                date={topic.data.date}
+              />
+            ))}
+          </div>
+        ) : (
+          <p class="text-hs-gray-500 text-center py-8">
+            No research topics yet. Check back soon!
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Recent Publications Section -->
+  <section class="section bg-hs-gray-100">
+    <div class="container-narrow">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-medium text-hs-gray-900">
+          Recent Publications
+        </h2>
+        <a href="/publications" class="text-sm text-hs-cyan hover:underline">
+          View all &rarr;
+        </a>
+      </div>
+
+      {
+        recentPublications.length > 0 ? (
+          <div class="bg-white rounded-lg p-6">
+            {recentPublications.map((pub) => (
+              <PublicationItem
+                slug={pub.slug}
+                title={pub.data.title}
+                authors={pub.data.authors}
+                date={pub.data.date}
+                doi={pub.data.doi}
+                pdfUrl={pub.data.pdfUrl}
+                codeUrl={pub.data.codeUrl}
+              />
+            ))}
+          </div>
+        ) : (
+          <p class="text-hs-gray-500 text-center py-8">
+            No publications yet. Check back soon!
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Recent Theses Section -->
+  <section class="section bg-hs-gray-100">
+    <div class="container-narrow">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-medium text-hs-gray-900">Recent Theses</h2>
+        <a href="/theses" class="text-sm text-hs-cyan hover:underline">
+          View all &rarr;
+        </a>
+      </div>
+
+      {
+        recentTheses.length > 0 ? (
+          <div class="bg-white rounded-lg p-6">
+            {recentTheses.map((thesis) => (
+              <ThesisItem
+                slug={thesis.slug}
+                title={thesis.data.title}
+                author={thesis.data.author}
+                supervisor={thesis.data.supervisor}
+                startDate={thesis.data.startDate}
+                endDate={thesis.data.endDate}
+                type={thesis.data.type}
+                proposal={thesis.data.proposal}
+                pdfUrl={thesis.data.pdfUrl}
+              />
+            ))}
+          </div>
+        ) : (
+          <p class="text-hs-gray-500 text-center py-8">
+            No theses yet. Check back soon!
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- About Section (brief) -->
+  <section class="section bg-white">
+    <div class="container-narrow text-center">
+      <h2 class="text-2xl font-medium text-hs-gray-900 mb-4">
+        About Our Research
+      </h2>
+      <p class="text-hs-gray-700 max-w-2xl mx-auto mb-6">
+        At the Intelligent Agricultural Systems working group, we conduct research in AI and robotics within the agri-food domain. Our application-oriented research focuses on where AI and robotics can be meaningfully integrated into products and processes. We collaborate with companies at various levels – from integration into teaching and joint theses to third-party funded projects and contract research. Feel free to contact us if you are interested.
+      </p>
+      <a
+        href="https://www.hs-osnabrueck.de/prof-dr-stefan-stiene/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm text-hs-cyan hover:underline"
+      >
+        Get in Touch &rarr;
+      </a>
+    </div>
+  </section>
+</Layout>

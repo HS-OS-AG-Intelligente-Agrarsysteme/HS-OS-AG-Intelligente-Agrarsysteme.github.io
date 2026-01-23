@@ -1,0 +1,96 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  author: string;
+  supervisor?: string;
+  startDate?: Date;
+  endDate?: Date;
+  type: "bachelor" | "master" | "phd";
+  proposal: boolean;
+  pdfUrl?: string;
+}
+
+const {
+  slug,
+  title,
+  author,
+  supervisor,
+  startDate,
+  endDate,
+  type,
+  proposal,
+  pdfUrl,
+} = Astro.props;
+
+const formatDate = (date: Date) => {
+  return date
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+    .replace(",", "");
+};
+
+const typeLabels = {
+  bachelor: "Bachelor Thesis",
+  master: "Master Thesis",
+  phd: "Dissertation",
+};
+---
+
+<article class="py-4 border-b border-hs-gray-300 last:border-b-0">
+  <div class="flex flex-wrap gap-2 mb-2">
+    <span class="text-xs px-2 py-1 rounded-full bg-hs-cyan/10 text-hs-cyan">
+      {typeLabels[type]}
+    </span>
+    {
+      proposal && (
+        <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800">
+          Proposal
+        </span>
+      )
+    }
+  </div>
+
+  <h3 class="font-medium text-hs-gray-900 mb-1">
+    <a href={`/theses/${slug}`} class="text-hs-cyan hover:underline">
+      {title}
+    </a>
+  </h3>
+  <p class="text-sm text-hs-gray-700 mb-1">
+    <span class="font-medium">Author:</span>
+    {author}
+  </p>
+  {
+    supervisor && (
+      <p class="text-sm text-hs-gray-700 mb-1">
+        <span class="font-medium">Supervisor:</span> {supervisor}
+      </p>
+    )
+  }
+  {
+    startDate && (
+      <p class="text-sm text-hs-gray-500">
+        {formatDate(startDate)}
+        {endDate && ` – ${formatDate(endDate)}`}
+      </p>
+    )
+  }
+
+  {
+    pdfUrl && (
+      <div class="flex flex-wrap gap-3 mt-2">
+        <a
+          href={pdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-hs-cyan hover:underline"
+        >
+          PDF
+        </a>
+      </div>
+    )
+  }
+</article>

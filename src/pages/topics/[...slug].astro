@@ -1,0 +1,24 @@
+---
+import ContentDetailLayout from "../../layouts/ContentDetailLayout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const topics = await getCollection("topics");
+  return topics.map((topic) => ({
+    params: { slug: topic.slug },
+    props: { topic },
+  }));
+}
+
+const { topic } = Astro.props;
+const { Content } = await render(topic);
+---
+
+<ContentDetailLayout
+  contentType="topic"
+  title={topic.data.title}
+  description={topic.data.description}
+  metadata={topic.data}
+>
+  <Content />
+</ContentDetailLayout>
