@@ -3,7 +3,7 @@ interface Props {
   slug: string;
   title: string;
   author: string;
-  supervisor?: string;
+  supervisors?: string[];
   startDate?: Date;
   endDate?: Date;
   type: "bachelor" | "master" | "phd";
@@ -15,7 +15,7 @@ const {
   slug,
   title,
   author,
-  supervisor,
+  supervisors,
   startDate,
   endDate,
   type,
@@ -64,9 +64,11 @@ const typeLabels = {
     {author}
   </p>
   {
-    supervisor && (
+    supervisors && supervisors.length > 0 && (
       <p class="text-sm text-hs-gray-700 mb-1">
-        <span class="font-medium">Supervisor:</span> {supervisor}
+        <span class="font-medium">
+          {supervisors.length === 1 ? "Supervisor:" : "Supervisors:"}
+        </span> {supervisors.join(", ")}
       </p>
     )
   }

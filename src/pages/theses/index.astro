@@ -111,8 +111,8 @@ const typeLabels = {
 
                 <div class="text-sm text-hs-gray-700 space-y-1">
                   <p><span class="font-medium">Author:</span> {thesis.data.author}</p>
-                  {thesis.data.supervisor && (
-                    <p><span class="font-medium">Supervisor:</span> {thesis.data.supervisor}</p>
+                  {thesis.data.supervisors && thesis.data.supervisors.length > 0 && (
+                    <p><span class="font-medium">{thesis.data.supervisors.length === 1 ? 'Supervisor:' : 'Supervisors:'}</span> {thesis.data.supervisors.join(', ')}</p>
                   )}
                 </div>
 

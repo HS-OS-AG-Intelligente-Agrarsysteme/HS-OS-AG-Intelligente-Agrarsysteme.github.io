@@ -130,13 +130,13 @@ const formatDate = (date: Date | undefined) => {
                   <span class="font-medium text-hs-gray-900">Author:</span>
                   <span class="text-hs-gray-700 ml-2">{metadata.author}</span>
                 </p>
-                {metadata.supervisor && (
+                {metadata.supervisors && metadata.supervisors.length > 0 && (
                   <p>
                     <span class="font-medium text-hs-gray-900">
-                      Supervisor:
+                      {metadata.supervisors.length === 1 ? "Supervisor:" : "Supervisors:"}
                     </span>
                     <span class="text-hs-gray-700 ml-2">
-                      {metadata.supervisor}
+                      {metadata.supervisors.join(", ")}
                     </span>
                   </p>
                 )}

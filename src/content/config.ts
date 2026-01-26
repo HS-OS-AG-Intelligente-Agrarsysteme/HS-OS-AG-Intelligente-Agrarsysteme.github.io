@@ -25,7 +25,7 @@ const theses = defineCollection({
     description: z.string(),
     type: z.enum(['bachelor', 'master', 'phd']),
     author: z.string(),
-    supervisor: z.string().optional(),
+    supervisors: z.array(z.string()).optional(),
     proposal: z.boolean().default(false),
     startDate: z.coerce.date().optional(),
     endDate: z.coerce.date().optional(),
