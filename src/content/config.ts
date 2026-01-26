@@ -41,7 +41,7 @@ const topics = defineCollection({
     contentType: z.literal('topic'),
     title: z.string(),
     description: z.string(),
-    author: z.string(),
+    authors: z.array(z.string()),
     date: z.coerce.date(),
     thumbnail: image().optional(),
     externalUrl: z.string().url().optional(),

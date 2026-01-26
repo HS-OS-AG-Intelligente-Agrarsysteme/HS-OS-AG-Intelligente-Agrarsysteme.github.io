@@ -69,7 +69,7 @@ const formatDate = (date: Date | undefined) => {
           </span>
         </div>
 
-        <h1 class="text-3xl md:text-4xl font-bold text-hs-gray-900 mb-4">
+        <h1 class="text-4xl font-bold text-hs-gray-900 mb-4">
           {title}
         </h1>
 
@@ -83,8 +83,10 @@ const formatDate = (date: Date | undefined) => {
             contentType === "topic" && (
               <div class="space-y-2 text-sm">
                 <p>
-                  <span class="font-medium text-hs-gray-900">Author:</span>
-                  <span class="text-hs-gray-700 ml-2">{metadata.author}</span>
+                  <span class="font-medium text-hs-gray-900">Authors:</span>
+                  <span class="text-hs-gray-700 ml-2">
+                    {metadata.authors?.join(", ")}
+                  </span>
                 </p>
                 <p>
                   <span class="font-medium text-hs-gray-900">Published:</span>
@@ -239,11 +241,14 @@ const formatDate = (date: Date | undefined) => {
   .prose {
     @apply text-hs-gray-700;
   }
+  .prose h1 {
+    @apply text-4xl font-bold text-hs-gray-900 mt-10 mb-6;
+  }
   .prose h2 {
-    @apply text-2xl font-medium text-hs-gray-900 mt-8 mb-4;
+    @apply text-3xl font-semibold text-hs-gray-900 mt-8 mb-4;
   }
   .prose h3 {
-    @apply text-xl font-medium text-hs-gray-900 mt-6 mb-3;
+    @apply text-2xl font-medium text-hs-gray-900 mt-6 mb-3;
   }
   .prose p {
     @apply mb-4;

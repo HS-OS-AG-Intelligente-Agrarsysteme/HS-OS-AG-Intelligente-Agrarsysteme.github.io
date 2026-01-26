@@ -32,8 +32,9 @@ const topics = allTopics.sort(
                 title={topic.data.title}
                 description={topic.data.description}
                 href={`/topics/${topic.slug}`}
-                author={topic.data.author}
+                authors={topic.data.authors}
                 date={topic.data.date}
+                thumbnail={topic.data.thumbnail?.src}
               />
             ))}
           </div>
