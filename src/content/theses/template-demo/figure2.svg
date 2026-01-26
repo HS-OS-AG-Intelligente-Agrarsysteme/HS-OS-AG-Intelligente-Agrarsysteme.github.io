@@ -1,0 +1,5 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#fce7f3"/>
+  <rect x="100" y="100" width="200" height="100" fill="#db2777" opacity="0.3"/>
+  <text x="200" y="240" font-family="Arial" font-size="18" fill="#db2777" text-anchor="middle">Thesis Figure 2</text>
+</svg>
