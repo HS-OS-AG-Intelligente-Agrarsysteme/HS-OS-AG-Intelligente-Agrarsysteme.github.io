@@ -1,7 +1,8 @@
 ---
 contentType: topic
 title: "Ground-Truth Test Environment via Multi-Object Tracking for Autonomous Agricultural Robots"
-description: "Mobile multi-sensor test field environment with multi-object tracking pipeline for system-level evaluation of autonomous agricultural robots."
+description: "Mobile multi-sensor test field environment with multi-object tracking pipeline for 
+system-level evaluation of autonomous agricultural robots."
 authors:
   - "Daniel Barrelmeyer"
   - "Jannik Jose"
@@ -12,6 +13,8 @@ codeUrl: "https://github.com/hs-os-ag-intelligente-agrarsysteme"
 ---
  
 import videoSrc from './multi_object_tracking_demo.mp4';
+import mdpi_paper_preview_Src from './mdpi_paper_preview.png';
+import vdi_paper_preview_Src from './vdi_paper_preview.png';
 
 <video autoplay muted loop playsinline style="width:100%; border-radius:8px;">
   <source src={videoSrc} type="video/mp4" />
@@ -19,11 +22,18 @@ import videoSrc from './multi_object_tracking_demo.mp4';
 </video>
 
 ## Overview
-Autonomous agricultural robots are increasingly deployed in real farming environments. These systems operate in complex and dynamic outdoor settings where they must interact safely with humans, animals, and other machines. Ensuring the reliability and the correct behavior of such systems requires validation under realistic field conditions. Existing validation approaches often rely on stationary test infrastructures, focus primarily on sub-system levels like individual sensors, or are limited to single-object scenarios.
+Autonomous agricultural robots are increasingly deployed in real farming environments. These 
+systems operate in complex and dynamic outdoor settings where they must interact safely with 
+humans, animals, and other machines. Ensuring the reliability and the correct behavior of such 
+systems requires validation under realistic field conditions. Existing validation approaches often 
+rely on stationary test infrastructures, focus primarily on sub-system levels like individual 
+sensors, or are limited to single-object scenarios.
 
-Our research addresses this issue by developing a **testing setup** that can be used in a wide range of settings.   
+Our research addresses this issue by developing a **testing setup** that can be used in a wide 
+range of settings.   
 The setup
-- is **mobile** and **self-sufficient** (independent of fixed energy supply or communication infrastructure)
+- is **mobile** and **self-sufficient** (independent of fixed energy supply or communication 
+infrastructure)
 - enables independent detection of the **position**, **orientation** and **extent** of objects
 - enables simultaneous detection of **multiple dynamic objects**
 - is capable of monitoring **agricultural areas** of **realistic size**
@@ -32,13 +42,21 @@ The setup
 - is able to treat **objects as black boxes** (without information exchange)
 
 ## Mobile Sensor Stations
-The setup is based on at least three sensor stations. Each sensor station is equipped with a high-resolution 3D LiDAR sensor, a GNSS receiver for time synchronization and georeferencing, and an edge computing unit for data acquisition. The stations are mounted on portable tripods and powered by autonomous battery systems, enabling flexible deployment without additional infrastructure.
+The setup is based on at least three sensor stations. Each sensor station is equipped with a 
+high-resolution 3D LiDAR sensor, a GNSS receiver for time synchronization and georeferencing, and 
+an edge computing unit for data acquisition. The stations are mounted on portable tripods and 
+powered by autonomous battery systems, enabling flexible deployment without additional 
+infrastructure.
 
-By distributing several sensor stations around the area of interest, the environment can be observed from multiple viewpoints. This configuration reduces occlusions and allows the system to capture dynamic objects over large field areas.
+By distributing several sensor stations around the area of interest, the environment can be 
+observed from multiple viewpoints. This configuration reduces occlusions and allows the system to 
+capture dynamic objects over large field areas.
 
 <div class="flex justify-center w-2/3 mx-auto">
 
 ![Sensor station](./senor_station_hardware_setup.png)
+*Figure 1: Picture of one assembled sensor station.*
+
 
 </div>
 
@@ -51,65 +69,150 @@ By distributing several sensor stations around the area of interest, the environ
 | Tripod | BST-K-L | STABILA Messgeräte Gustav Ullrich GmbH |
 | Edge Computer | NRU-220S-JAO64G (Jetson AGX Orin) | Neousys Technology / NVIDIA |
 
+*Table 1: Hardware components of a sensor station.*
+
 ## Multi-Object Tracking Pipeline
 
-The perception component of the framework focuses on transforming raw measurements from multiple mobile sensor stations into georeferenced object trajectories that can serve as ground truth for field experiments. The pipeline takes synchronized 3D LiDAR and GNSS data as input and produces detections and temporally consistent tracks of dynamic objects such as agricultural robots or humans. In this way, the system provides an external and explainable reference for evaluating navigation, geofencing, and environmental perception functions of autonomous agricultural robots.
+The software pipeline of the framework focuses on transforming raw measurements from multiple
+mobile sensor stations into georeferenced object trajectories that can serve as ground truth for 
+field experiments. The pipeline takes synchronized 3D LiDAR and GNSS data as input and produces 
+detections and temporally consistent tracks of dynamic objects such as agricultural robots or 
+humans. In this way, the system provides an external and explainable reference for evaluating 
+navigation, geofencing, and environmental perception functions of autonomous agricultural robots.
 
 ![Multi Object Tracking Pipeline](./workflow_software_pipeline.svg)
+*Figure 2: Scheme (high-level) of multi object tracking workflow*
 
 
 ### Data Acquisition
-The data acquisition is performed by several mobile sensor stations positioned around the area of interest. Each station combines a high-resolution 3D LiDAR sensor with GNSS-based time synchronization and georeferencing, while an edge computer records the measurement streams locally.
+
+The data acquisition is performed by several mobile sensor stations positioned around the area of 
+interest. Each station combines a high-resolution 3D LiDAR sensor with GNSS-based time 
+synchronization and georeferencing, while an edge computer records the measurement streams locally
+as rosbags in the mcap file format.
+
 <div class="flex justify-center w-2/3 mx-auto">
 
 ![Data Acquisition](./data_acquisition.svg)
+*Figure 3: A simplified scheme of data acquisition, including sensor positioning, recording, and satellite communication for timestamping.*
 
 </div>
 
 ### Data Fusion
-After acquisition, the measurements of the individual sensor stations are synchronized in time and aligned in space to form a common point cloud representation of the scene. GNSS-based timestamps provide a shared temporal reference, while registration methods combine the LiDAR scans into a consistent global frame. This fusion step is essential because it expands the observable area, improves the spatial impression of objects, and reduces blind spots that would occur when relying on a single station only.
+
+After acquisition, the measurements of the individual sensor stations are synchronized in time and 
+aligned in space to form a common point cloud representation of the scene. GNSS-based timestamps 
+provide a shared temporal reference, while registration methods combine the LiDAR scans into a 
+consistent global frame. This fusion step is essential because it expands the observable area, 
+improves the spatial impression of objects, and reduces blind spots that would occur when relying 
+on a single station only.
+
 ![Pointcloud Fusion](./pointcloud_fusion.svg)
+*Figure 4: Individual point clouds captured by three sensors (green, orange, and red), and their
+combined (fused) point cloud, which is subsequently used for the detection.*
+
 ### Object Detection
-Object detection begins with the separation of dynamic objects from the static environment. For this purpose, a reference scan of the scene without moving objects is used to identify structures that remain unchanged over time. In addition, region-of-interest constraints and dedicated filtering steps remove irrelevant measurements and reduce the amount of data that has to be processed in later stages.t
+
+Object detection begins with the separation of dynamic objects from the static environment. For 
+this purpose, a reference scan of the scene without moving objects is used to identify structures 
+that remain unchanged over time. In addition, region-of-interest constraints and dedicated 
+filtering steps remove irrelevant measurements and reduce the amount of data that has to be 
+processed in later stages.
+
 <div class="flex justify-center w-2/3 mx-auto">
 
-![Pointcloud Fusion](./ground_filter_result.svg)
+![Ground Filter](./ground_filter_result.svg)
+*Figure 5: Ground filter applied to an example point cloud with two
+people and an agricultural robot.*
 
 </div>
-A dedicated ground-filtering stage is then applied to suppress terrain points and retain only measurements that are likely to belong to relevant objects. Since agricultural environments often contain uneven terrain and sparse vegetation, robust geometric filtering is required before segmentation can be performed reliably. The remaining points are subsequently grouped into object candidates using density-based clustering methods.
+
+A dedicated ground-filtering stage is applied to suppress terrain points and retain only 
+measurements that are likely to belong to relevant objects. Since agricultural environments often 
+contain uneven terrain and sparse vegetation, robust geometric filtering is required before 
+segmentation can be performed reliably. The remaining points are subsequently grouped into object 
+candidates using density-based clustering methods.
+
 <div class="flex justify-center w-2/3 mx-auto">
 
-![Pointcloud Fusion](./pointcloud_clustering.svg)
+![Pointcloud Clustering](./pointcloud_clustering.svg)
+*Figure 6: Result of clustering a multi-object scene.*
 
 </div>
-For each resulting cluster, geometric object properties are estimated in the form of three-dimensional bounding boxes. These bounding boxes describe the position, orientation, and spatial extent of the object and thus provide the measurement input for the tracking stage. The detection module is deliberately based on interpretable geometric processing rather than end-to-end learning, making the resulting ground truth easier to analyze and validate.
+
+For each resulting cluster, geometric object properties are estimated in the form of 
+three-dimensional bounding boxes. These bounding boxes describe the position, orientation, and 
+spatial extent of the object and thus provide the measurement input for the tracking stage. 
+The detection module is deliberately based on interpretable geometric processing rather than 
+end-to-end learning, making the resulting ground truth easier to analyze and validate.
+
 <div class="flex justify-center w-2/3 mx-auto">
 
-![Pointcloud Fusion](./pc_tracking_result_robot_bb_side_by_side.png)
+![Bounding Box Detection Visualization](./pc_tracking_result_robot_bb_side_by_side.png)
+*Figure 7: Visualisation of fused 3D point cloud data with an oriented bounding box highlighting the
+detected robot. The left image shows colour-coded data points from multiple sensors, while the right
+image displays a monochrome version of the same data for clarity.*
 
 </div>
 
 
 ### Multi Object Tracking
-The tracking stage links object detections across time and estimates temporally consistent trajectories for all visible objects. The system follows a tracking-by-detection paradigm in which the bounding boxes extracted from the fused point clouds are used as observations for a probabilistic multi-object tracker. Motion prediction, data association, state update, and track management are combined to maintain stable identities even in challenging situations such as temporary occlusions, close interactions, or missed detections. This allows the system to generate robust trajectories that can be used as quantitative ground truth for validating autonomous agricultural robots in dynamic field scenarios.
+
+The tracking stage links object detections across time and estimates temporally consistent 
+trajectories for all visible objects. The system follows a tracking-by-detection paradigm in which 
+the bounding boxes extracted from the fused point clouds are used as detections for a 
+probabilistic multi-object tracker. Motion prediction, data association, state update, and track 
+management are combined to maintain stable identities even in challenging situations such as 
+temporary occlusions, close interactions, or missed detections. This allows the system to generate 
+robust trajectories that can be used as quantitative ground truth for validating autonomous 
+agricultural robots in dynamic field scenarios.
+
 <div class="flex justify-center mx-auto">
 
-![Pointcloud Fusion](./multi_object_tracking_scheme.svg)
+![Multi Object Tracking Scheme](./multi_object_tracking_scheme.svg)
+*Figure 8: Architecture of the multi-object tracker.*
 
 </div>
 
 ## Example Use Cases
 
-The developed framework enables:
+<div class="flex justify-center mx-auto">
 
-- validation of robot trajectories  
-- geofence violation detection  
-- human detection validation  
-- multi-robot interaction analysis  
-- navigation accuracy assessment
+![Use Cases](./example_use_cases.svg)
+*Figure 9: Visualisation of example use cases (geofencing, trajectory tracking and environment perception).*
+
+</div>
+
+### Geofencing
+Autonomous agricultural robots must respect predefined safety zones during operation. The 
+developed ground-truth system enables the validation of geofencing functionality by providing 
+precise trajectories of the robot within the test environment. By comparing the ground-truth 
+trajectory with the defined geofence boundaries, it becomes possible to determine whether the 
+robot correctly detects and reacts to boundary violations. This allows researchers to evaluate 
+both the timing and spatial accuracy of safety-related system responses under realistic field 
+conditions.
+
+### Trajectory Tracking
+The tracking system can also be used to evaluate the navigation performance of autonomous robots. 
+By reconstructing the ground-truth trajectory of the robot from the fused LiDAR observations, the 
+system provides an independent reference for assessing localization and path-following accuracy. 
+The resulting trajectories can be compared with the navigation data reported by the robot itself, 
+allowing deviations and systematic localization errors to be identified. This makes it possible to 
+quantitatively analyze navigation performance in large outdoor environments.
+
+### Environment Perception
+Another important application of the test environment is the evaluation of human–robot (or other 
+dynamic objects) interaction 
+scenarios. In agricultural fields, robots must operate safely in the presence of human workers. 
+By tracking both the robot and human participants simultaneously, the system can reconstruct their 
+relative motion and spatial relationships over time. This allows safety-related behaviors such as 
+obstacle avoidance, safe stopping distances, and reaction times to be analyzed in dynamic 
+multi-object situations.
 
 ## Field Tests and Datasets
-Coming soon
+Some field trials and results are described in [@barrelmeyer2025]. Datasets are available upon request.
+
+More information is coming soon.
 
 ## Research Contributions
 
@@ -126,43 +229,49 @@ This research topic provides:
 
 ## Publications
 
-This research topic is based on a series of publications that build on each other.
+<div class="grid grid-cols-[140px_1fr] gap-4 bg-gray-50 border rounded-lg p-5 my-6">
 
-### Journal and Conference Papers
+<img src={mdpi_paper_preview_Src.src} alt="paper preview" class="rounded-md"/>
 
-**Paper 1 – System Infrastructure**
+<div>
 
-*Mobile Ground-Truth 3D Detection Environment for Agricultural Robot Field Testing*  
-Sensors, 2025  
+### Mobile Ground-Truth 3D Detection Environment for Agricultural Robot Field Testing
 
-- mobile multi-sensor field infrastructure  
-- fused LiDAR ground truth  
-- system-level testing concept  
+**Barrelmeyer, D., Stiene, S., Jose, J., Porrmann, M.**
 
----
+*Sensors, 2025*
 
-**Paper 2 – Field Tracking and Use Cases**
+[Paper](https://doi.org/10.3390/s25134103)
 
-*Environment for Testing Agricultural Robots in the Field with Ground Truth 3D Object Tracking*  
-VDI Landtechnik, 2025  
+</div>
 
-- multi-object tracking in field experiments  
-- use cases: geofencing, navigation  
-- system-level validation scenarios  
+</div>
 
----
+<div class="grid grid-cols-[140px_1fr] gap-4 bg-gray-50 border rounded-lg p-5 my-6">
+
+<img src={vdi_paper_preview_Src.src} alt="paper preview" class="rounded-md"/>
+
+<div>
+
+### Environment for Testing Agricultural Robots in the Field with Ground Truth 3D Object Tracking
+
+**Barrelmeyer, D., Jose, J., Stiene, S.**
+
+*VDI LAND.TECHNIK AgEng Conference, 2025*
+
+[Conference Proceedings](https://doi.org/10.51202/9783181024652)
+
+</div>
+
+</div>
 
 ## Collaboration
 
-We collaborate with:
+If you are interested in collaboration, please contact 
+- Stefan Stiene - s.stiene@hs-osnabrueck.de
+- Daniel Barrelmeyer - daniel.barrelmeyer@hs-osnabrueck.de
+- Jannik Jose - jannik.jose@hs-osnabrueck.de
 
-- agricultural robot manufacturers  
-- research institutes  
-- test fields  
-- standardization bodies  
-
-If you are interested in collaboration, please contact the  
-**Intelligent Agricultural Systems Group – Hochschule Osnabrück**.
 
 ---
 ## Acknowledgments and Funding
