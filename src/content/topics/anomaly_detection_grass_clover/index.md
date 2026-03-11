@@ -31,4 +31,4 @@ In the context of the [ZERN Grünland](https://zern-verbund.de/themenbereiche-2/
 
 This research was funded by the Lower Saxony Ministry of Science and Culture and the Volkswagen Foundation as part of the zukunft.niedersachsen program
 
-![Placeholder visualization](./zukunft-niedersachsen_Logo_Schwarz_CMYK.PNG)
+![Placeholder visualization](./zukunft-niedersachsen_Logo_Schwarz_CMYK.png)
