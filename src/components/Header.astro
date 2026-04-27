@@ -2,8 +2,8 @@
 import logo from "../assets/logos/HS-OS-Logo-Quer-ohne_Hintergrund-cmyk.svg";
 
 const navItems = [
+  { label: "Home", href: "/" },
   { label: "Research Topics", href: "/topics" },
-  { label: "Publications", href: "/publications" },
   { label: "Theses", href: "/theses" },
   { label: "Team", href: "https://www.hs-osnabrueck.de/agro-technicum/team/", external: true },
   { label: "Contact", href: "https://www.hs-osnabrueck.de/prof-dr-stefan-stiene/", external: true },
@@ -37,7 +37,7 @@ const currentPath = Astro.url.pathname;
               href={item.href}
               class:list={[
                 "text-sm font-medium transition-colors hover:no-underline",
-                !item.external && currentPath.startsWith(item.href)
+                !item.external && (item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href))
                   ? "text-hs-cyan"
                   : "text-hs-gray-700 hover:text-hs-cyan",
               ]}
@@ -82,7 +82,7 @@ const currentPath = Astro.url.pathname;
             href={item.href}
             class:list={[
               "block py-2 text-sm font-medium hover:no-underline",
-              !item.external && currentPath.startsWith(item.href)
+              !item.external && (item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href))
                 ? "text-hs-cyan"
                 : "text-hs-gray-700 hover:text-hs-cyan",
             ]}

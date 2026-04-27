@@ -2,7 +2,7 @@
 import Layout from "./Layout.astro";
 
 interface Props {
-  contentType: "topic" | "publication" | "thesis";
+  contentType: "topic" | "thesis";
   title: string;
   description: string;
   metadata: Record<string, any>;
@@ -12,7 +12,6 @@ const { contentType, title, description, metadata } = Astro.props;
 
 const contentTypeLabels = {
   topic: "Research Topic",
-  publication: "Publication",
   thesis: "Thesis",
 };
 
@@ -24,7 +23,6 @@ const thesisTypeLabels = {
 
 const contentTypeColors = {
   topic: "bg-blue-100 text-blue-800",
-  publication: "bg-purple-100 text-purple-800",
   thesis: "bg-green-100 text-green-800",
 };
 
@@ -43,20 +41,10 @@ const formatDate = (date: Date | undefined) => {
     <div class="container-narrow">
       <!-- Back link -->
       <a
-        href={contentType === "topic"
-          ? "/topics"
-          : contentType === "publication"
-            ? "/publications"
-            : "/theses"}
+        href={contentType === "topic" ? "/topics" : "/theses"}
         class="text-sm text-hs-cyan hover:underline mb-6 inline-block"
       >
-        &larr; Back to {
-          contentType === "topic"
-            ? "Research Topics"
-            : contentType === "publication"
-              ? "Publications"
-              : "Theses"
-        }
+        &larr; Back to {contentType === "topic" ? "Research Topics" : "Theses"}
       </a>
 
       <!-- Header -->
@@ -92,31 +80,6 @@ const formatDate = (date: Date | undefined) => {
                   <span class="font-medium text-hs-gray-900">Published:</span>
                   <span class="text-hs-gray-700 ml-2">
                     {formatDate(metadata.date)}
-                  </span>
-                </p>
-              </div>
-            )
-          }
-
-          {
-            contentType === "publication" && (
-              <div class="space-y-2 text-sm">
-                <p>
-                  <span class="font-medium text-hs-gray-900">Authors:</span>
-                  <span class="text-hs-gray-700 ml-2">
-                    {metadata.authors?.join(", ")}
-                  </span>
-                </p>
-                <p>
-                  <span class="font-medium text-hs-gray-900">Published:</span>
-                  <span class="text-hs-gray-700 ml-2">
-                    {metadata.date
-                      .toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })
-                      .replace(",", "")}
                   </span>
                 </p>
               </div>

@@ -1,21 +1,5 @@
 import { defineCollection, z } from 'astro:content';
 
-// Publications collection (papers, journal articles, conference papers)
-const publications = defineCollection({
-  type: 'content',
-  schema: z.object({
-    contentType: z.literal('publication'),
-    title: z.string(),
-    description: z.string(),
-    authors: z.array(z.string()),
-    date: z.coerce.date(),
-    abstract: z.string().optional(),
-    doi: z.string().optional(),
-    pdfUrl: z.string().url().optional(),
-    codeUrl: z.string().url().optional(),
-  }),
-});
-
 // Theses collection (bachelor, master, phd)
 const theses = defineCollection({
   type: 'content',
@@ -50,7 +34,6 @@ const topics = defineCollection({
 });
 
 export const collections = {
-  publications,
   theses,
   topics,
 };

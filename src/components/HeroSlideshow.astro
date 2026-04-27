@@ -5,7 +5,7 @@ interface Slide {
   title: string;
   description: string;
   href: string;
-  contentType: 'topic' | 'publication' | 'thesis';
+  contentType: 'topic' | 'thesis';
   status?: 'ongoing' | 'proposed' | 'completed';
   date?: Date;
 }
@@ -45,7 +45,6 @@ const heroBackgrounds = await Promise.all(
 
 const contentTypeColors = {
   topic: 'bg-blue-500',
-  publication: 'bg-purple-500',
   thesis: 'bg-green-500',
 };
 
@@ -103,7 +102,7 @@ const statusColors = {
             >
               <div class="flex items-center justify-center gap-2 mb-3">
                 <span class={`text-xs px-2 py-1 rounded-full text-white ${contentTypeColors[slide.contentType]}`}>
-                  {slide.contentType === 'topic' ? 'Research Topic' : slide.contentType.charAt(0).toUpperCase() + slide.contentType.slice(1)}
+                  {slide.contentType === 'topic' ? 'Research Topic' : 'Thesis'}
                 </span>
                 {slide.status && (
                   <span class={`text-xs px-2 py-1 rounded-full text-white ${statusColors[slide.status]}`}>

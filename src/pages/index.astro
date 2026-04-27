@@ -2,7 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import HeroSlideshow from "../components/HeroSlideshow.astro";
 import TopicCard from "../components/TopicCard.astro";
-import PublicationItem from "../components/PublicationItem.astro";
 import ThesisItem from "../components/ThesisItem.astro";
 import { getCollection } from "astro:content";
 
@@ -11,12 +10,6 @@ const allTopics = await getCollection("topics");
 const recentTopics = allTopics
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
-
-// Get recent publications
-const allPublications = await getCollection("publications");
-const recentPublications = allPublications
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 5);
 
 // Get recent theses
 const allTheses = await getCollection("theses");
@@ -36,14 +29,6 @@ const topicSlides = allTopics.map((topic) => ({
   date: topic.data.date,
 }));
 
-const publicationSlides = allPublications.map((pub) => ({
-  title: pub.data.title,
-  description: pub.data.description,
-  href: `/publications/${pub.slug}`,
-  contentType: "publication" as const,
-  date: pub.data.date,
-}));
-
 const thesisSlides = allTheses.map((thesis) => ({
   title: thesis.data.title,
   description: thesis.data.description,
@@ -54,7 +39,7 @@ const thesisSlides = allTheses.map((thesis) => ({
 }));
 
 // Combine and sort by date (newest first), take last 5
-const allSlides = [...topicSlides, ...publicationSlides, ...thesisSlides]
+const allSlides = [...topicSlides, ...thesisSlides]
   .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0))
   .slice(0, 5);
 
@@ -62,7 +47,7 @@ const heroSlides = allSlides;
 ---
 
 <Layout title="Home">
-  <!-- Hero Slideshow with Recent Content (Projects, Publications, Theses) -->
+  <!-- Hero Slideshow with Recent Content (Research Topics, Theses) -->
   <HeroSlideshow
     slides={heroSlides}
     mainTitle="Intelligent Agricultural Systems"
@@ -76,7 +61,10 @@ const heroSlides = allSlides;
         <h2 class="text-2xl font-medium text-hs-gray-900">
           Recent Research Topics
         </h2>
-        <a href="/topics" class="text-sm text-hs-cyan hover:underline">
+        <a
+          href="/topics"
+          class="text-sm font-medium bg-hs-cyan text-white px-4 py-1.5 rounded-md hover:bg-opacity-90 hover:no-underline transition-colors"
+        >
           View all &rarr;
         </a>
       </div>
@@ -104,48 +92,15 @@ const heroSlides = allSlides;
     </div>
   </section>
 
-  <!-- Recent Publications Section -->
-  <section class="section bg-hs-gray-100">
-    <div class="container-narrow">
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-medium text-hs-gray-900">
-          Recent Publications
-        </h2>
-        <a href="/publications" class="text-sm text-hs-cyan hover:underline">
-          View all &rarr;
-        </a>
-      </div>
-
-      {
-        recentPublications.length > 0 ? (
-          <div class="bg-white rounded-lg p-6">
-            {recentPublications.map((pub) => (
-              <PublicationItem
-                slug={pub.slug}
-                title={pub.data.title}
-                authors={pub.data.authors}
-                date={pub.data.date}
-                doi={pub.data.doi}
-                pdfUrl={pub.data.pdfUrl}
-                codeUrl={pub.data.codeUrl}
-              />
-            ))}
-          </div>
-        ) : (
-          <p class="text-hs-gray-500 text-center py-8">
-            No publications yet. Check back soon!
-          </p>
-        )
-      }
-    </div>
-  </section>
-
   <!-- Recent Theses Section -->
   <section class="section bg-hs-gray-100">
     <div class="container-narrow">
       <div class="flex items-center justify-between mb-8">
         <h2 class="text-2xl font-medium text-hs-gray-900">Recent Theses</h2>
-        <a href="/theses" class="text-sm text-hs-cyan hover:underline">
+        <a
+          href="/theses"
+          class="text-sm font-medium bg-hs-cyan text-white px-4 py-1.5 rounded-md hover:bg-opacity-90 hover:no-underline transition-colors"
+        >
           View all &rarr;
         </a>
       </div>
@@ -189,7 +144,7 @@ const heroSlides = allSlides;
         href="https://www.hs-osnabrueck.de/prof-dr-stefan-stiene/"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-sm text-hs-cyan hover:underline"
+        class="inline-block text-sm font-medium bg-hs-cyan text-white px-4 py-1.5 rounded-md hover:bg-opacity-90 hover:no-underline transition-colors"
       >
         Get in Touch &rarr;
       </a>
